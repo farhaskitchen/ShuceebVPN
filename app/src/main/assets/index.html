@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ShuceebVPN</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: #1c1c2e; color: #fff; min-height: 100vh; }
+  .topbar { background: #13131f; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid #2a2a40; }
+  .logo-row { display: flex; align-items: center; gap: 10px; }
+  .logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #6d4aff; }
+  .brand { font-size: 15px; font-weight: 500; color: #fff; }
+  .brand span { color: #6d4aff; }
+  .badge { background: #6d4aff22; color: #a78bfa; font-size: 11px; padding: 3px 8px; border-radius: 20px; border: 0.5px solid #6d4aff55; }
+  .main { padding: 24px 20px 16px; }
+  .conn-card { background: #13131f; border-radius: 16px; border: 0.5px solid #2a2a40; padding: 24px 20px; text-align: center; margin-bottom: 20px; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 6px; }
+  .status-text { font-size: 13px; color: #22c55e; font-weight: 500; }
+  .big-btn { width: 110px; height: 110px; border-radius: 50%; background: #6d4aff; border: none; color: white; font-size: 13px; font-weight: 500; margin: 20px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-direction: column; gap: 4px; -webkit-tap-highlight-color: transparent; }
+  .big-btn svg { width: 32px; height: 32px; }
+  .conn-label { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .conn-sub { font-size: 13px; color: #6b7280; }
+  .server-card { background: #13131f; border-radius: 12px; border: 0.5px solid #2a2a40; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .server-left { display: flex; align-items: center; gap: 12px; }
+  .server-name { font-size: 14px; font-weight: 500; }
+  .server-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .ping { font-size: 12px; color: #22c55e; }
+  .ping.slow { color: #f59e0b; }
+  .ping.dead { color: #ef4444; }
+  .section-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; margin-top: 4px; }
+  .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: #13131f; border-radius: 12px; border: 0.5px solid #2a2a40; padding: 14px; }
+  .stat-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+  .stat-val { font-size: 18px; font-weight: 500; color: #fff; }
+  .stat-unit { font-size: 11px; color: #6b7280; }
+  .selected { border-color: #6d4aff !important; }
+  .check { color: #6d4aff; font-size: 16px; margin-left: 6px; }
+  .kill-row { background: #13131f; border-radius: 12px; border: 0.5px solid #2a2a40; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .kill-label { font-size: 14px; }
+  .kill-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .toggle { width: 40px; height: 22px; background: #6d4aff; border-radius: 20px; position: relative; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+  .toggle::after { content: ''; width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; right: 3px; top: 3px; transition: all 0.2s; }
+  .toggle.off { background: #2a2a40; }
+  .toggle.off::after { right: auto; left: 3px; }
+  .footer-note { font-size: 11px; color: #374151; text-align: center; padding: 10px 0 16px; }
+  .flag { font-size: 22px; }
+  .toast { background: #1f1f35; border: 0.5px solid #ef4444; border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; display: none; }
+  .toast.show { display: block; }
+  .toast-title { font-size: 16px; font-weight: 700; color: #ef4444; margin-bottom: 2px; }
+  .toast-body { font-size: 12px; color: #9ca3af; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo-row">
+    <div style="width:38px;height:38px;border-radius:50%;background:#6d4aff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">S</div>
+    <span class="brand">Shuce<span>eb</span>VPN</span>
+  </div>
+  <span class="badge">PRO</span>
+</div>
+
+<div class="main">
+  <div id="nakas-toast" class="toast">
+    <div class="toast-title">naccas 💀</div>
+    <div class="toast-body">Shuceeb says no. Turn it back off, idiot.</div>
+  </div>
+
+  <div class="conn-card">
+    <div style="margin-bottom:12px;">
+      <span class="status-dot" id="status-dot"></span>
+      <span class="status-text" id="status-text">Shuceeb is on it</span>
+    </div>
+    <button class="big-btn" id="main-btn" onclick="toggleConn()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>
+      <span id="btn-label">Disconect</span>
+    </button>
+    <div class="conn-label" id="conn-label">Conected</div>
+    <div class="conn-sub" id="conn-sub">Shuceeb's Bedroom · UK</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Downlod speed</div>
+      <div class="stat-val">847 <span class="stat-unit">SU/s</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Uplaod speed</div>
+      <div class="stat-val">12 <span class="stat-unit">SU/s</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Shuceeb's lokations</div>
+
+  <div class="server-card selected" onclick="selectServer(this, 'Shuceeb\'s Bedroom · UK')">
+    <div class="server-left">
+      <span class="flag">🇬🇧</span>
+      <div>
+        <div class="server-name">Shuceeb's Bedroom</div>
+        <div class="server-sub">United Kingdome · Best one</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="ping">2ms</span>
+      <span class="check">✓</span>
+    </div>
+  </div>
+
+  <div class="server-card" onclick="selectServer(this, 'Guri Adeerkii · Muqdisho, Soomaaliya')">
+    <div class="server-left">
+      <span class="flag">🇸🇴</span>
+      <div>
+        <div class="server-name">Guri Adeerkii</div>
+        <div class="server-sub">Muqdisho, Soomaaliya · Xaafadda fiican</div>
+      </div>
+    </div>
+    <span class="ping slow">340ms</span>
+  </div>
+
+  <div class="server-card" onclick="selectServer(this, 'Joe\'s Pizzer · New York')">
+    <div class="server-left">
+      <span class="flag">🍕</span>
+      <div>
+        <div class="server-name">Joe's Pizzer</div>
+        <div class="server-sub">New York · He looked unhappy here</div>
+      </div>
+    </div>
+    <span class="ping">88ms</span>
+  </div>
+
+  <div class="server-card" onclick="selectServer(this, 'Shiina · Beijing, China')">
+    <div class="server-left">
+      <span class="flag">🇨🇳</span>
+      <div>
+        <div class="server-name">Shiina</div>
+        <div class="server-sub">Beijing, China · Might not work</div>
+      </div>
+    </div>
+    <span class="ping dead">lol</span>
+  </div>
+
+  <div class="section-label" style="margin-top:20px;">Setings</div>
+
+  <div class="kill-row">
+    <div>
+      <div class="kill-label">Trust the Procces</div>
+      <div class="kill-sub">Shuceeb handles it. Dont worry.</div>
+    </div>
+    <div class="toggle" onclick="this.classList.toggle('off')"></div>
+  </div>
+
+  <div class="kill-row">
+    <div>
+      <div class="kill-label">Kill Swich</div>
+      <div class="kill-sub">Shuceeb will be upset if you use this</div>
+    </div>
+    <div class="toggle off" onclick="killSwich(this)"></div>
+  </div>
+
+  <div class="footer-note">© 2025 ShuceebVPN Ltd. We dont store logs. Shuceeb might tho.</div>
+</div>
+
+<script>
+  var killTimer = null;
+  function killSwich(el) {
+    if (el.classList.contains('off')) {
+      el.classList.remove('off');
+      var toast = document.getElementById('nakas-toast');
+      toast.classList.add('show');
+      setTimeout(function() { el.classList.add('off'); }, 400);
+      if (killTimer) clearTimeout(killTimer);
+      killTimer = setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+  }
+  function toggleConn() {
+    var label = document.getElementById('btn-label');
+    var conn = document.getElementById('conn-label');
+    var sub = document.getElementById('conn-sub');
+    var dot = document.getElementById('status-dot');
+    var statusText = document.getElementById('status-text');
+    var btn = document.getElementById('main-btn');
+    if (label.textContent === 'Disconect') {
+      label.textContent = 'Conect';
+      conn.textContent = 'Not Conected';
+      sub.textContent = 'Shuceeb is on a break';
+      dot.style.background = '#ef4444';
+      statusText.style.color = '#ef4444';
+      statusText.textContent = 'Shuceeb stepped out';
+      btn.style.background = '#374151';
+    } else {
+      label.textContent = 'Disconect';
+      conn.textContent = 'Conected';
+      sub.textContent = "Shuceeb's Bedroom · UK";
+      dot.style.background = '#22c55e';
+      statusText.style.color = '#22c55e';
+      statusText.textContent = 'Shuceeb is on it';
+      btn.style.background = '#6d4aff';
+    }
+  }
+  function selectServer(el, name) {
+    document.querySelectorAll('.server-card').forEach(function(c) {
+      c.classList.remove('selected');
+      var chk = c.querySelector('.check');
+      if (chk) chk.remove();
+    });
+    el.classList.add('selected');
+    var ping = el.querySelector('.ping');
+    var chk = document.createElement('span');
+    chk.className = 'check';
+    chk.textContent = '✓';
+    ping.insertAdjacentElement('afterend', chk);
+    document.getElementById('conn-sub').textContent = name;
+  }
+</script>
+</body>
+</html>
